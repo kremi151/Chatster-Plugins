@@ -17,11 +17,15 @@
 package lu.kremi151.chatster.plugin.fact
 
 import lu.kremi151.chatster.api.annotations.Plugin
+import lu.kremi151.chatster.api.command.CommandProvider
 import lu.kremi151.chatster.api.plugin.ChatsterPlugin
+import lu.kremi151.chatster.api.util.Handler
 
 @Plugin(id = "fact", name = "Random facts plugin for Chatster")
 class FactPlugin: ChatsterPlugin() {
 
-
+    override fun onRegisterCommands(register: Handler<CommandProvider>) {
+        register(FactCommandProvider())
+    }
 
 }
