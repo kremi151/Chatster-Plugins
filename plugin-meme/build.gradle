@@ -1,0 +1,19 @@
+apply plugin: "java-library"
+
+repositories {
+    jcenter()
+}
+
+jar {
+    archiveClassifier = "meme"
+
+    manifest {
+        attributes 'Chatster-Plugin-Class': "lu.kremi151.chatster.plugin.meme.MemePlugin"
+    }
+}
+ 
+dependencies {
+    compileOnly project(':api')
+    compileOnly group: 'com.squareup.okhttp3', name: 'okhttp', version: libOkHttpVersion
+    compileOnly group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: libLog4jVersion
+}
