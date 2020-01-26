@@ -17,8 +17,41 @@
 package lu.kremi151.chatster.plugin.js
 
 import lu.kremi151.chatster.api.annotations.Plugin
+import lu.kremi151.chatster.api.command.CommandProvider
 import lu.kremi151.chatster.api.plugin.ChatsterPlugin
+import lu.kremi151.chatster.api.util.Handler
+import lu.kremi151.chatster.plugin.js.command.JSCommandProvider
+import java.io.File
 
 @Plugin(id = "javascript", name = "JavaScript integration for Chatster")
 class JavaScriptPlugin: ChatsterPlugin() {
+
+    private var commandProviders: List<JSCommandProvider> = emptyList()
+
+    override fun onLoad() {
+        val scriptsFolder = this.scriptsFolder
+        if (!scriptsFolder.exists()) {
+            scriptsFolder.mkdirs()
+        }
+        val providers = ArrayList<JSCommandProvider>()
+        val jsonFiles = scriptsFolder.listFiles { file -> file.name.toLowerCase().endsWith(".json")}
+        if (jsonFiles != null) {
+            for (file in jsonFiles) {
+                if (!file.isFile || !file.canRead()) {
+                    continue
+                }
+                providers.add(JSCommandProvider(file))
+            }
+        }
+        commandProviders = providers
+    }
+
+    override fun onRegisterCommands(register: Handler<CommandProvider>) {
+        for (provider in commandProviders) {
+            register(provider)
+        }
+    }
+
+    private val scriptsFolder = File("js-commands")
+
 }
