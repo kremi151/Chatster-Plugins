@@ -5,7 +5,7 @@ repositories {
 }
 
 jar {
-    archiveClassifier = "meme"
+    archiveClassifier = "js"
 
     manifest {
         attributes 'Chatster-Plugin-Class': "lu.kremi151.chatster.plugin.js.JavaScriptPlugin"
