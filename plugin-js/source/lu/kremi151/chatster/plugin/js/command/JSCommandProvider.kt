@@ -51,11 +51,11 @@ class JSCommandProvider(
             throw IOException("Cannot open script file at $scriptFile")
         }
 
-        var builder1 = builder
+        val builder1 = builder
                 .literal(Objects.requireNonNull(definition.name, "Command name must not be null")!!)
-        builder1 = setupArguments(builder1, definition) as LiteralCommandBuilder
+        val builder2 = setupArguments(builder1, definition) as ExecutableCommandBuilder
         try {
-            registry.registerCommand(builder1.executes(JSCommandExecutor(scriptFile)).top())
+            registry.registerCommand(builder2.executes(JSCommandExecutor(scriptFile)).top())
         } catch (e: ScriptException) {
             throw IOException(e)
         }
@@ -76,7 +76,7 @@ class JSCommandProvider(
             for (i in 1 until parameterAnnotations.size) {
                 val annotations = parameterAnnotations[i]
                 for (annotation in annotations) {
-                    if (annotation.annotationClass != CommandArgParam::class.java) {
+                    if (annotation.annotationClass.java != CommandArgParam::class.java) {
                         continue
                     }
                     val commandArgParam = annotation as CommandArgParam
@@ -87,7 +87,7 @@ class JSCommandProvider(
             }
 
             return try {
-                method.invoke(builder, args) as ArgumentableCommandBuilder
+                method.invoke(builder, *args) as ArgumentableCommandBuilder
             } catch (e: ReflectiveOperationException) {
                 LOGGER.warn("Reflection error while invoking argument builder", e)
                 null
