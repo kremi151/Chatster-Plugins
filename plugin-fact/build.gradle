@@ -13,6 +13,7 @@ jar {
 }
  
 dependencies {
+    compileOnly group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib', version: kotlin_version
     compileOnly project(':api')
     compileOnly group: 'com.squareup.okhttp3', name: 'okhttp', version: libOkHttpVersion
 }

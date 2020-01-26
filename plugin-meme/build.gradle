@@ -13,6 +13,7 @@ jar {
 }
  
 dependencies {
+    compileOnly group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib', version: kotlin_version
     compileOnly project(':api')
     compileOnly group: 'com.squareup.okhttp3', name: 'okhttp', version: libOkHttpVersion
     compileOnly group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: libLog4jVersion
