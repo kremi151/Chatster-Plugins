@@ -1,0 +1,3 @@
+[submodule "Chatster"]
+	path = Chatster
+	url = https://github.com/kremi151/Chatster

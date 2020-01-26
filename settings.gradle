@@ -1,0 +1,4 @@
+include ':plugin-fact'
+
+include ':api'
+project(':api').projectDir = new File(rootProject.projectDir, 'Chatster/api')

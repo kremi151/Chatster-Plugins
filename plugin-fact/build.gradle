@@ -1,0 +1,17 @@
+apply plugin: "java-library"
+
+repositories {
+    jcenter()
+}
+
+jar {
+    archiveClassifier = "fact"
+
+    manifest {
+        attributes 'Chatster-Plugin-Class': "lu.kremi151.chatster.plugin.fact.FactPlugin"
+    }
+}
+ 
+dependencies {
+    implementation project(':api')
+}
