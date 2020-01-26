@@ -33,29 +33,35 @@ class FactCommandProvider: CommandProvider {
     private val random = Random()
     private val client: OkHttpClient = OkHttpClient.Builder().build()
 
+    private fun tryHandleFact(context: CommandContext): Boolean {
+        val request = Request.Builder()
+                .url("https://factrepublic.com/random-facts-generator/")
+                .build()
+        client.newCall(request).execute().use { response ->
+            val html = response.body!!.string()
+            val matcher = FACT_PATTERN.matcher(html)
+            val facts = ArrayList<String>()
+            while (matcher.find()) {
+                val fact = matcher.group(1).trim()
+                facts.add(fact)
+            }
+            if (facts.isEmpty()) {
+                return false
+            }
+            val theFact: String
+            synchronized(random) {
+                theFact = facts[random.nextInt(facts.size)]
+            }
+            context.sendTextMessage(theFact)
+            return true
+        }
+    }
+
     @Throws(IOException::class)
     private fun handleFact(context: CommandContext) {
         context.sendWriting(true)
         for (i in 0..2) {
-            val request = Request.Builder()
-                    .url("https://factrepublic.com/random-facts-generator/")
-                    .build()
-            client.newCall(request).execute().use { response ->
-                val html = response.body!!.string()
-                val matcher = FACT_PATTERN.matcher(html)
-                val facts = ArrayList<String>()
-                while (matcher.find()) {
-                    val fact = matcher.group(1).trim { it <= ' ' }
-                    facts.add(fact)
-                }
-                if (facts.isEmpty()) {
-                    return
-                }
-                val theFact: String
-                synchronized(random) {
-                    theFact = facts[random.nextInt(facts.size)]
-                }
-                context.sendTextMessage(theFact)
+            if (tryHandleFact(context)) {
                 return
             }
         }

@@ -13,6 +13,6 @@ jar {
 }
  
 dependencies {
-    implementation project(':api')
-    implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: libOkHttpVersion
+    compileOnly project(':api')
+    compileOnly group: 'com.squareup.okhttp3', name: 'okhttp', version: libOkHttpVersion
 }
