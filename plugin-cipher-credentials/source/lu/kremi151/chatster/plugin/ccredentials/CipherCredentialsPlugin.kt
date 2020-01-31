@@ -29,7 +29,10 @@ class CipherCredentialsPlugin: ChatsterPlugin() {
 
     @Provider
     fun createCipherCredentialStore(): CipherCredentialStore {
-        val key = System.getenv(ENV_VAR) ?: throw IllegalStateException("Could not read credential store key from environment variable $ENV_VAR")
+        val key = System.getenv(ENV_VAR)
+        if (key == null || key.isBlank()) {
+            throw IllegalStateException("Could not read credential store key from environment variable $ENV_VAR")
+        }
         return CipherCredentialStore(key)
     }
 }
