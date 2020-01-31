@@ -27,14 +27,9 @@ class CipherCredentialsPlugin: ChatsterPlugin() {
         private const val ENV_VAR = "CHATSTER_CREDENTIAL_STORE_KEY"
     }
 
-    private lateinit var key: String
-
-    override fun onLoad() {
-        key = System.getenv(ENV_VAR) ?: throw IllegalStateException("Could not read credential store key from environment variable $ENV_VAR")
-    }
-
     @Provider
     fun createCipherCredentialStore(): CipherCredentialStore {
+        val key = System.getenv(ENV_VAR) ?: throw IllegalStateException("Could not read credential store key from environment variable $ENV_VAR")
         return CipherCredentialStore(key)
     }
 }
