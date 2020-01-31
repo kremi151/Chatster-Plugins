@@ -65,7 +65,7 @@ class MemeCommandProvider: CommandProvider {
         var memeUrl: String? = null
         var memeTitle: String? = null
         for (i in 0..2) {
-            client.newCall(request).execute().use { response ->
+            memeUrl = client.newCall(request).execute().use { response ->
                 val html = response.body!!.string()
                 var matcher = TITLE_PATTERN.matcher(html)
                 if (matcher.find()) {
@@ -73,8 +73,9 @@ class MemeCommandProvider: CommandProvider {
                 }
                 matcher = MEME_PATTERN.matcher(html)
                 if (matcher.find()) {
-                    memeUrl = matcher.group(1).trim { it <= ' ' }
-                    return
+                    return@use matcher.group(1).trim { it <= ' ' }
+                } else {
+                    return@use null
                 }
             }
             if (memeUrl != null) {
@@ -94,7 +95,7 @@ class MemeCommandProvider: CommandProvider {
             fileName = fileName.substring(0, 16)
         }
 
-        val matcher = EXTENSION_PATTERN.matcher(memeUrl!!)
+        val matcher = EXTENSION_PATTERN.matcher(memeUrl)
         if (matcher.find()) {
             fileName += "." + matcher.group(1)
         }
@@ -105,11 +106,11 @@ class MemeCommandProvider: CommandProvider {
         }
         val tempFile = File(tempDir, fileName)
 
-        if (memeUrl!!.startsWith("//")) {
-            memeUrl = "https:" + memeUrl!!
+        if (memeUrl.startsWith("//")) {
+            memeUrl = "https:$memeUrl"
         }
 
-        request = Request.Builder().url(memeUrl!!).build()
+        request = Request.Builder().url(memeUrl).build()
         client.newCall(request).execute().use { response ->
             FileOutputStream(tempFile).use { out ->
                 val body = response.body ?: throw IOException("Could not read response")
