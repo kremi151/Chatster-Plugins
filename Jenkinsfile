@@ -20,7 +20,7 @@ pipeline {
 		stage('Update Git submodules') {
 			steps {
 				sh 'git submodule update --init --recursive'
-				sh 'git submodule foreach git pull origin master'
+				//sh 'git submodule foreach git pull origin master'
 			}
 		}
 		stage('Build') {
