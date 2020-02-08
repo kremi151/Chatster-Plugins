@@ -1,0 +1,19 @@
+apply plugin: "java-library"
+
+repositories {
+    jcenter()
+}
+
+jar {
+    archiveClassifier = "vaultfile"
+
+    manifest {
+        attributes 'Chatster-Plugin-Class': "lu.kremi151.chatster.plugin.vaultfile.VaultfilePlugin"
+    }
+}
+ 
+dependencies {
+    compileOnly group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib', version: kotlin_version
+    compileOnly project(':api')
+    compileOnly group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: libLog4jVersion
+}
