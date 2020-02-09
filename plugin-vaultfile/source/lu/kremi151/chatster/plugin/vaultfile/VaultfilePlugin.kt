@@ -72,7 +72,7 @@ class VaultfilePlugin: ChatsterPlugin() {
     fun executeVaultfileCommand(command: String, useKeyFile: Boolean): String {
         val customVaultfilePath = this.customVaultfilePath
         var vaultfileBaseCmd = if (customVaultfilePath != null) {
-            "\"$customVaultfilePath\""
+            "$customVaultfilePath"
         } else {
             "vaultfile"
         }
