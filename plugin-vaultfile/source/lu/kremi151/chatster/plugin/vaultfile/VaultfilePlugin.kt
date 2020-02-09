@@ -35,7 +35,7 @@ class VaultfilePlugin: ChatsterPlugin() {
         private val LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass())
     }
 
-    private lateinit var properties: Properties
+    private val properties = Properties()
 
     override fun onPreInitialize() {
         val propertiesFile = File("vaultfile.properties")
