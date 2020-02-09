@@ -21,11 +21,31 @@ import lu.kremi151.chatster.api.service.CredentialStore
 class VaultfileCredentialStore(private val plugin: VaultfilePlugin): CredentialStore {
 
     override fun readCredential(name: String): String? {
-        return plugin.executeVaultfileCommand("read-secret -f ${plugin.vaultfileName} -n $name", true)
+        var command = "read-secret --file ${plugin.vaultfileName}"
+        val customKeyPath = plugin.customKeyPath
+        if (customKeyPath != null) {
+            command = "$command --key-file \"$customKeyPath\""
+        }
+        val customKeyName = plugin.customKeyName
+        if (customKeyName != null) {
+            command = "$command --key-name $customKeyName"
+        }
+        command = "$command --name $name"
+        return plugin.executeVaultfileCommand(command)
     }
 
     override fun storeCredential(name: String, value: String) {
-        plugin.executeVaultfileCommand("add-secret --file ${plugin.vaultfileName} --name $name --value $value", true)
+        var command = "add-secret --file ${plugin.vaultfileName}"
+        val customKeyPath = plugin.customKeyPath
+        if (customKeyPath != null) {
+            command = "$command --key-file \"$customKeyPath\""
+        }
+        val customKeyName = plugin.customKeyName
+        if (customKeyName != null) {
+            command = "$command --key-name $customKeyName"
+        }
+        command = "$command --name $name --value $value"
+        plugin.executeVaultfileCommand(command)
     }
 
 }

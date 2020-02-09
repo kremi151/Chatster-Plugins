@@ -46,12 +46,13 @@ class VaultfilePlugin: ChatsterPlugin() {
 
     override fun onLoad() {
         LOGGER.info("Check if vaultfile executable is available...")
-        executeVaultfileCommand("--version", false)
+        executeVaultfileCommand("--version")
         LOGGER.info("Found vaultfile executable")
     }
 
     val customVaultfilePath: String? get() = properties.getProperty("vaultfile.executable.path", null)
     val customKeyPath: String? get() = properties.getProperty("vaultfile.keyfile.path", null)
+    val customKeyName: String? get() = properties.getProperty("vaultfile.keyfile.keyname", null)
     val vaultfileName: String get() = properties.getProperty("vaultfile.name", "credentials.vault")
 
     private fun readStreamIntoString(stream: InputStream): String {
@@ -69,17 +70,12 @@ class VaultfilePlugin: ChatsterPlugin() {
         }
     }
 
-    fun executeVaultfileCommand(command: String, useKeyFile: Boolean): String {
+    fun executeVaultfileCommand(command: String): String {
         val customVaultfilePath = this.customVaultfilePath
-        var vaultfileBaseCmd = if (customVaultfilePath != null) {
+        val vaultfileBaseCmd = if (customVaultfilePath != null) {
             "$customVaultfilePath"
         } else {
             "vaultfile"
-        }
-
-        val customKeyfilePath = this.customKeyPath
-        if (useKeyFile && customKeyfilePath != null) {
-            vaultfileBaseCmd = "$vaultfileBaseCmd --key-file=\"$customKeyfilePath\""
         }
 
         val process = Runtime.getRuntime().exec("$vaultfileBaseCmd $command")

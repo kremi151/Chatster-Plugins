@@ -23,4 +23,7 @@ vaultfile.executable.path=/home/user/custom-path/vaultfile
 
 # (Optional) If you want to use a different path for your private/public key pair than the default one created in $HOME/.vaultfile/$USER.key, specify the exact location here
 vaultfile.keyfile.path=path/to/private_key_file
+
+# (Optional) If your key is registered with a name different to the one of the current user name, specify it here
+vaultfile.keyfile.keyname=myKeyName
 ```
