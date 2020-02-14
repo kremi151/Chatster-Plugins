@@ -1,3 +1,6 @@
 [submodule "Chatster"]
 	path = Chatster
 	url = https://github.com/kremi151/Chatster
+[submodule "Jector"]
+	path = Jector
+	url = https://github.com/kremi151/Jector

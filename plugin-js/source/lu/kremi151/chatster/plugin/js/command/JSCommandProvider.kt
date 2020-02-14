@@ -18,10 +18,10 @@ package lu.kremi151.chatster.plugin.js.command
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import lu.kremi151.chatster.api.annotations.CommandArgParam
-import lu.kremi151.chatster.api.annotations.Inject
 import lu.kremi151.chatster.api.command.*
 import lu.kremi151.chatster.plugin.js.command.json.JSCommandArgumentDefinition
 import lu.kremi151.chatster.plugin.js.command.json.JSCommandDefinition
+import lu.kremi151.jector.annotations.Inject
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.File

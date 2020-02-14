@@ -5,3 +5,6 @@ include ':plugin-vaultfile'
 
 include ':api'
 project(':api').projectDir = new File(rootProject.projectDir, 'Chatster/api')
+
+include ':jector-api'
+project(':jector-api').projectDir = new File('Jector/api')

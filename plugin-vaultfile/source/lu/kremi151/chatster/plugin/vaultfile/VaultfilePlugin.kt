@@ -17,9 +17,9 @@
 package lu.kremi151.chatster.plugin.vaultfile
 
 import lu.kremi151.chatster.api.annotations.Plugin
-import lu.kremi151.chatster.api.annotations.Provider
 import lu.kremi151.chatster.api.plugin.ChatsterPlugin
 import lu.kremi151.chatster.api.service.CredentialStore
+import lu.kremi151.jector.annotations.Provider
 import org.slf4j.LoggerFactory
 import java.io.*
 import java.lang.StringBuilder
