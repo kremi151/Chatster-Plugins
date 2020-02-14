@@ -1,7 +1,6 @@
 include ':plugin-fact'
 include ':plugin-meme'
 include ':plugin-js'
-include ':plugin-cipher-credentials'
 include ':plugin-vaultfile'
 
 include ':api'
