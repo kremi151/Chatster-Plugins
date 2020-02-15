@@ -1,0 +1,19 @@
+apply plugin: "java-library"
+
+repositories {
+    jcenter()
+}
+
+jar {
+    archiveClassifier = "alphavantage"
+
+    manifest {
+        attributes 'Chatster-Plugin-Class': "lu.kremi151.chatster.plugin.alphavantage.AlphaVantagePlugin"
+    }
+}
+ 
+dependencies {
+    compileOnly group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib', version: kotlin_version
+    compileOnly project(':api')
+    compileOnly group: 'com.squareup.okhttp3', name: 'okhttp', version: libOkHttpVersion
+}
