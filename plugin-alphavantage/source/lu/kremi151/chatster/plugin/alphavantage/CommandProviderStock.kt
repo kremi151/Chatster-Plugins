@@ -17,7 +17,6 @@
 package lu.kremi151.chatster.plugin.alphavantage
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.sun.org.slf4j.internal.LoggerFactory
 import lu.kremi151.chatster.api.command.*
 import lu.kremi151.jector.annotations.Inject
 import okhttp3.OkHttpClient
@@ -26,12 +25,16 @@ import java.io.UnsupportedEncodingException
 import java.net.URLEncoder
 import java.io.IOException
 import lu.kremi151.chatster.api.context.CommandContext
+import lu.kremi151.chatster.plugin.alphavantage.json.AlphaVantageConfig
 import lu.kremi151.chatster.plugin.alphavantage.json.GlobalQuote
 import lu.kremi151.chatster.plugin.alphavantage.json.GlobalQuoteResponse
 import lu.kremi151.chatster.plugin.alphavantage.json.MatchesResult
 import okhttp3.Request
+import org.slf4j.LoggerFactory
 
-class CommandProviderStock: CommandProvider {
+class CommandProviderStock(
+        private val config: AlphaVantageConfig
+): CommandProvider {
 
     companion object {
         private val LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass())
@@ -43,11 +46,9 @@ class CommandProviderStock: CommandProvider {
     @Inject
     private lateinit var objectMapper: ObjectMapper
 
-    // TODO: Implement config handling (this plugin will NOT work until this has been implemented)
-    private lateinit var alphaVantageApiKey: String
-
     override fun registerCommands(builder: RootCommandBuilder, registry: CommandRegistry) {
-        if (alphaVantageApiKey == null) {
+        val alphaVantageApiKey = config.alphaVantageApiKey
+        if (alphaVantageApiKey == null || alphaVantageApiKey.isBlank()) {
             LOGGER.warn("No API key configured for the AlphaVantage plugin. The stock command will not be registered.")
             return
         }
@@ -56,7 +57,7 @@ class CommandProviderStock: CommandProvider {
                 .executes(object : CommandExecutor{
                     override fun execute(command: ExecutedCommand): Boolean {
                         val symbol = command.getStringArgument(ARG_SYMBOL)
-                        if (!queryStock(symbol, command.context)) {
+                        if (!queryStock(symbol, command.context, alphaVantageApiKey)) {
                             command.context.sendTextMessage("No data could be loaded for $symbol")
                         }
                         return true
@@ -65,7 +66,7 @@ class CommandProviderStock: CommandProvider {
                 .top())
     }
 
-    private fun queryStock(symbol: String, context: CommandContext): Boolean {
+    private fun queryStock(symbol: String, context: CommandContext, alphaVantageApiKey: String): Boolean {
         context.sendWriting(true)
 
         val request: Request
@@ -87,7 +88,7 @@ class CommandProviderStock: CommandProvider {
                     respondStock(globalQuote, context)
                     return true
                 }
-                lookupSymbol(symbol, context)
+                lookupSymbol(symbol, context, alphaVantageApiKey)
                 return true
             }
         } catch (e: IOException) {
@@ -118,7 +119,7 @@ class CommandProviderStock: CommandProvider {
     }
 
     @Throws(IOException::class)
-    private fun lookupSymbol(input: String, context: CommandContext): Boolean {
+    private fun lookupSymbol(input: String, context: CommandContext, alphaVantageApiKey: String): Boolean {
         val request: Request
         try {
             request = Request.Builder()

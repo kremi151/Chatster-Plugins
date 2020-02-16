@@ -19,13 +19,26 @@ package lu.kremi151.chatster.plugin.alphavantage
 import lu.kremi151.chatster.api.annotations.Plugin
 import lu.kremi151.chatster.api.command.CommandProvider
 import lu.kremi151.chatster.api.plugin.ChatsterPlugin
+import lu.kremi151.chatster.api.plugin.PluginContext
 import lu.kremi151.chatster.api.util.Handler
+import lu.kremi151.chatster.plugin.alphavantage.json.AlphaVantageConfig
 
 @Plugin(id = "alphavantage", name = "AlphaVantage stock command plugin")
 class AlphaVantagePlugin: ChatsterPlugin() {
 
+    private lateinit var config: AlphaVantageConfig
+
+    override fun onLoad(event: PluginContext) {
+        var config = event.loadConfig(AlphaVantageConfig::class.java)
+        if (config == null) {
+            config = AlphaVantageConfig()
+            event.saveConfig(config)
+        }
+        this.config = config
+    }
+
     override fun onRegisterCommands(register: Handler<CommandProvider>) {
-        register(CommandProviderStock())
+        register(CommandProviderStock(config))
     }
 
 }
