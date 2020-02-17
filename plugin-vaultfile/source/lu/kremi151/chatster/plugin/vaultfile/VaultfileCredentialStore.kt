@@ -18,15 +18,22 @@ package lu.kremi151.chatster.plugin.vaultfile
 
 import lu.kremi151.chatster.api.service.CredentialStore
 
-class VaultfileCredentialStore(private val plugin: VaultfilePlugin): CredentialStore {
+class VaultfileCredentialStore(
+        private val plugin: VaultfilePlugin,
+        private val config: VaultfileConfig
+): CredentialStore {
+
+    companion object {
+        private const val DEFAULT_VAULTFILE_NAME = "credentials.vault"
+    }
 
     override fun readCredential(name: String): String? {
-        var command = "read-secret --file ${plugin.vaultfileName}"
-        val customKeyPath = plugin.customKeyPath
+        var command = "read-secret --file ${config.vaultfileName ?: DEFAULT_VAULTFILE_NAME}"
+        val customKeyPath = config.keyFile?.path
         if (customKeyPath != null) {
             command = "$command --key-file \"$customKeyPath\""
         }
-        val customKeyName = plugin.customKeyName
+        val customKeyName = config.keyFile?.keyName
         if (customKeyName != null) {
             command = "$command --key-name $customKeyName"
         }
@@ -35,12 +42,12 @@ class VaultfileCredentialStore(private val plugin: VaultfilePlugin): CredentialS
     }
 
     override fun storeCredential(name: String, value: String) {
-        var command = "add-secret --file ${plugin.vaultfileName}"
-        val customKeyPath = plugin.customKeyPath
+        var command = "add-secret --file ${config.vaultfileName ?: DEFAULT_VAULTFILE_NAME}"
+        val customKeyPath = config.keyFile?.path
         if (customKeyPath != null) {
             command = "$command --key-file \"$customKeyPath\""
         }
-        val customKeyName = plugin.customKeyName
+        val customKeyName = config.keyFile?.keyName
         if (customKeyName != null) {
             command = "$command --key-name $customKeyName"
         }

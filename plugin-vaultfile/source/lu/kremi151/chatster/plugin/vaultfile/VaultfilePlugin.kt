@@ -18,15 +18,15 @@ package lu.kremi151.chatster.plugin.vaultfile
 
 import lu.kremi151.chatster.api.annotations.Plugin
 import lu.kremi151.chatster.api.plugin.ChatsterPlugin
+import lu.kremi151.chatster.api.plugin.InitPluginContext
+import lu.kremi151.chatster.api.plugin.PreInitPluginContext
 import lu.kremi151.chatster.api.service.CredentialStore
 import lu.kremi151.jector.annotations.Provider
 import org.slf4j.LoggerFactory
 import java.io.*
 import java.lang.StringBuilder
 import java.lang.invoke.MethodHandles
-import java.util.*
 import java.util.concurrent.TimeUnit
-
 
 @Plugin(id = "vaultfile", name = "Vaultfile integration plugin")
 class VaultfilePlugin: ChatsterPlugin() {
@@ -35,25 +35,18 @@ class VaultfilePlugin: ChatsterPlugin() {
         private val LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass())
     }
 
-    private val properties = Properties()
+    private lateinit var config: VaultfileConfig
 
-    override fun onPreInitialize() {
-        val propertiesFile = File("vaultfile.properties")
-        if (propertiesFile.exists()) {
-            FileInputStream(propertiesFile).use { properties.load(it) }
-        }
+    override fun onPreInitialize(context: PreInitPluginContext) {
+        // We have to load the config in onPreInitialize as onLoad is called after bean initialization
+        config = context.loadConfig(VaultfileConfig::class.java) ?: VaultfileConfig()
     }
 
-    override fun onLoad() {
+    override fun onLoad(context: InitPluginContext) {
         LOGGER.info("Check if vaultfile executable is available...")
         executeVaultfileCommand("--version")
         LOGGER.info("Found vaultfile executable")
     }
-
-    val customVaultfilePath: String? get() = properties.getProperty("vaultfile.executable.path", null)
-    val customKeyPath: String? get() = properties.getProperty("vaultfile.keyfile.path", null)
-    val customKeyName: String? get() = properties.getProperty("vaultfile.keyfile.keyname", null)
-    val vaultfileName: String get() = properties.getProperty("vaultfile.name", "credentials.vault")
 
     private fun readStreamIntoString(stream: InputStream): String {
         return BufferedReader(InputStreamReader(stream)).use {
@@ -71,13 +64,7 @@ class VaultfilePlugin: ChatsterPlugin() {
     }
 
     fun executeVaultfileCommand(command: String): String {
-        val customVaultfilePath = this.customVaultfilePath
-        val vaultfileBaseCmd = if (customVaultfilePath != null) {
-            "$customVaultfilePath"
-        } else {
-            "vaultfile"
-        }
-
+        val vaultfileBaseCmd = config.executablePath ?: "vaultfile"
         val process = Runtime.getRuntime().exec("$vaultfileBaseCmd $command")
         process.waitFor(1L, TimeUnit.SECONDS)
 
@@ -92,7 +79,7 @@ class VaultfilePlugin: ChatsterPlugin() {
 
     @Provider
     fun createVaultfileCredentialStore(): CredentialStore {
-        return VaultfileCredentialStore(this)
+        return VaultfileCredentialStore(this, config)
     }
 
 }
