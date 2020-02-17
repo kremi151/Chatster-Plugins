@@ -13,17 +13,14 @@ This plugin uses the `vaultfile` shared secret manager written by Daniel Gray (h
 <br/>See https://github.com/danielthegray/vaultfile#workflow
 3. Add your secrets to the newly created vaultfile
 <br/>See https://github.com/danielthegray/vaultfile#adding-a-secret-password-api-key-etc
-4. In your Chatster folder, create a file called `vaultfile.properties` and add the following properties (adjust them to your requirements)
+4. In your Chatster `config` folder, create a file called `vaultfile.json` and add the following properties (adjust them to your requirements)
 ```
-# (Optional) The name of the vaultfile. Unless specified otherwise, it will be called credentials.vault
-vaultfile.name=custom-name.vault
-
-# (Optional) If the vaultfile binary is not accessible by your PATH configuration, specify its exact location here
-vaultfile.executable.path=/home/user/custom-path/vaultfile
-
-# (Optional) If you want to use a different path for your private/public key pair than the default one created in $HOME/.vaultfile/$USER.key, specify the exact location here
-vaultfile.keyfile.path=path/to/private_key_file
-
-# (Optional) If your key is registered with a name different to the one of the current user name, specify it here
-vaultfile.keyfile.keyname=myKeyName
+{
+   "executablePath": "Optional file system path to your Vaultfile executable",
+   "vaultfileName": "Optional custom name for your vault file. If empty, 'credentials.vault' will be applied",
+   "keyFile": {
+      "path": "Optional custom path for your private/public key pair if different from $HOME/.vaultfile/$USER.key",
+      "keyName": "Optional custom name for your key in the vaultfile if different from $USER"
+   }
+}
 ```
