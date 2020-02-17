@@ -19,7 +19,7 @@ package lu.kremi151.chatster.plugin.alphavantage
 import lu.kremi151.chatster.api.annotations.Plugin
 import lu.kremi151.chatster.api.command.CommandProvider
 import lu.kremi151.chatster.api.plugin.ChatsterPlugin
-import lu.kremi151.chatster.api.plugin.PluginContext
+import lu.kremi151.chatster.api.plugin.InitPluginContext
 import lu.kremi151.chatster.api.util.Handler
 import lu.kremi151.chatster.plugin.alphavantage.json.AlphaVantageConfig
 
@@ -28,11 +28,11 @@ class AlphaVantagePlugin: ChatsterPlugin() {
 
     private lateinit var config: AlphaVantageConfig
 
-    override fun onLoad(event: PluginContext) {
-        var config = event.loadConfig(AlphaVantageConfig::class.java)
+    override fun onLoad(context: InitPluginContext) {
+        var config = context.loadConfig(AlphaVantageConfig::class.java)
         if (config == null) {
             config = AlphaVantageConfig()
-            event.saveConfig(config)
+            context.saveConfig(config)
         }
         this.config = config
     }
