@@ -3,6 +3,7 @@ include ':plugin-meme'
 include ':plugin-js'
 include ':plugin-vaultfile'
 include ':plugin-alphavantage'
+include ':plugin-retro'
 
 include ':api'
 project(':api').projectDir = new File(rootProject.projectDir, 'Chatster/api')
