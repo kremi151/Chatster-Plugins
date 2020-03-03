@@ -17,7 +17,9 @@
 package lu.kremi151.chatster.plugin.retro
 
 import lu.kremi151.chatster.api.annotations.Plugin
+import lu.kremi151.chatster.api.command.CommandProvider
 import lu.kremi151.chatster.api.plugin.ChatsterPlugin
+import lu.kremi151.chatster.api.util.Handler
 import lu.kremi151.chatster.plugin.retro.service.RetroStateHolder
 import lu.kremi151.chatster.plugin.retro.service.impl.RetroMessageHandler
 import lu.kremi151.chatster.plugin.retro.service.impl.RetroStateHolderImpl
@@ -35,6 +37,10 @@ class RetroTextPlugin: ChatsterPlugin() {
     @Provider
     fun createStateHolder(): RetroStateHolder {
         return RetroStateHolderImpl()
+    }
+
+    override fun onRegisterCommands(register: Handler<CommandProvider>) {
+        register(CommandProviderRetro())
     }
 
 }

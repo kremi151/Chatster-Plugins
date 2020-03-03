@@ -16,10 +16,9 @@
 
 package lu.kremi151.chatster.plugin.retro
 
-import lu.kremi151.chatster.api.message.Message
-import lu.kremi151.chatster.api.profile.ProfileLauncher
 import lu.kremi151.chatster.plugin.retro.service.RetroStateHolder
 import lu.kremi151.chatster.plugin.retro.state.BuildingState
+import lu.kremi151.chatster.plugin.retro.util.MessagingAdapter
 import okhttp3.FormBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -43,39 +42,39 @@ object StateHandler {
 
     private val REGEX_PATTERN = Pattern.compile("<img\\s+src=[\"']([^\"']+)")
 
-    fun handleMessage(stateHolder: RetroStateHolder, message: Message, profile: ProfileLauncher, state: BuildingState?) {
+    fun handleMessage(stateHolder: RetroStateHolder, adapter: MessagingAdapter, state: BuildingState?) {
         //val state = stateHolder.getState(message.senderId) ?: stateHolder.createState(message.senderId)
         if (state == null) {
-            stateHolder.createState(message.sender)
-            profile.sendTextMessage(message, "What should be put on the first line?")
+            stateHolder.createState(adapter.sender)
+            adapter.sendTextMessage("What should be put on the first line?")
             return
         }
-        if (message.message.isNullOrBlank()) {
-            profile.sendTextMessage(message, "I'm sorry, could you repeat that?\n(Type \"cancel\" to cancel)")
+        if (adapter.message.isNullOrBlank()) {
+            adapter.sendTextMessage("I'm sorry, could you repeat that?\n(Type \"cancel\" to cancel)")
             return
-        } else if (message.message == "cancel") {
-            stateHolder.wipeState(message.sender)
-            profile.sendTextMessage(message, "very canceled. much sad.")
+        } else if (adapter.message == "cancel") {
+            stateHolder.wipeState(adapter.sender)
+            adapter.sendTextMessage("very canceled. much sad.")
             return
         }
         if (state.line1.isNullOrBlank()) {
-            state.line1 = message.message!!.trim()
-            profile.sendTextMessage(message, "What should be put on the second line?")
+            state.line1 = adapter.message!!.trim()
+            adapter.sendTextMessage("What should be put on the second line?")
         } else if (state.line2.isNullOrBlank()) {
-            state.line2 = message.message!!.trim()
-            profile.sendTextMessage(message, "What should be put on the third line?")
+            state.line2 = adapter.message!!.trim()
+            adapter.sendTextMessage("What should be put on the third line?")
         } else if (state.line3.isNullOrBlank()) {
-            state.line3 = message.message!!.trim()
+            state.line3 = adapter.message!!.trim()
             val sb = StringBuilder("Which background style do you want?\nChoices:")
             for (style in BuildingState.BackgroundStyle.values()) {
                 sb.append("\n* ${style.value} (${style.code})")
             }
             sb.append("\nPlease type in the numerical value of choice")
-            profile.sendTextMessage(message, sb.toString())
+            adapter.sendTextMessage(sb.toString())
         } else if (state.backgroundStyle == null) {
-            val bgStyle = findBackgroundStyle(message.message!!)
+            val bgStyle = findBackgroundStyle(adapter.message!!)
             if (bgStyle == null) {
-                profile.sendTextMessage(message, "Unknown background style: ${message.message}")
+                adapter.sendTextMessage("Unknown background style: ${adapter.message}")
                 return
             }
             state.backgroundStyle = bgStyle
@@ -85,20 +84,20 @@ object StateHandler {
                 sb.append("\n* ${style.value} (${style.code})")
             }
             sb.append("\nPlease type in the numerical value of choice")
-            profile.sendTextMessage(message, sb.toString())
+            adapter.sendTextMessage(sb.toString())
         } else if (state.textStyle == null) {
-            val textStyle = findTextStyle(message.message!!)
+            val textStyle = findTextStyle(adapter.message!!)
             if (textStyle == null) {
-                profile.sendTextMessage(message, "Unknown text style: ${message.message}")
+                adapter.sendTextMessage("Unknown text style: ${adapter.message}")
                 return
             }
             state.textStyle = textStyle
-            stateHolder.wipeState(message.sender)
-            sendRequest(message, state, profile)
+            stateHolder.wipeState(adapter.sender)
+            sendRequest(adapter, state)
         }
     }
 
-    private fun sendRequest(message: Message, state: BuildingState, profile: ProfileLauncher) {
+    private fun sendRequest(adapter: MessagingAdapter, state: BuildingState) {
         val requestBody = FormBody.Builder()
                 .add("bcg", "${state.backgroundStyle!!.code}")
                 .add("txt", "${state.textStyle!!.code}")
@@ -116,7 +115,7 @@ object StateHandler {
         }
 
         if (html.isNullOrBlank()) {
-            profile.sendTextMessage(message, "Text could not be generated")
+            adapter.sendTextMessage("Text could not be generated")
             return
         }
 
@@ -128,7 +127,7 @@ object StateHandler {
         }
 
         if (url.isNullOrBlank()) {
-            profile.sendTextMessage(message, "Text could not be generated")
+            adapter.sendTextMessage("Text could not be generated")
             return
         }
 
@@ -158,7 +157,7 @@ object StateHandler {
         }
 
         try {
-            profile.sendTextMessage(message, tempFile)
+            adapter.sendFile(tempFile)
         } finally {
             if (!deleteFolder(tempDir)) {
                 LOGGER.warn("Could not delete temporary folder at {}", tempDir.absolutePath)

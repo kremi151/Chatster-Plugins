@@ -21,6 +21,7 @@ import lu.kremi151.chatster.api.profile.ProfileLauncher
 import lu.kremi151.chatster.api.service.MessageHandler
 import lu.kremi151.chatster.plugin.retro.StateHandler
 import lu.kremi151.chatster.plugin.retro.service.RetroStateHolder
+import lu.kremi151.chatster.plugin.retro.util.MessagingMessageAdapter
 import lu.kremi151.jector.annotations.Inject
 
 class RetroMessageHandler: MessageHandler {
@@ -29,10 +30,10 @@ class RetroMessageHandler: MessageHandler {
 
     override fun onInboundMessage(message: Message, profile: ProfileLauncher): Message? {
         val state = stateHolder.getState(message.sender)
-        return if (state == null && "!retro" != message.message) {
+        return if (state == null) {
             message
         } else {
-            StateHandler.handleMessage(stateHolder, message, profile, state)
+            StateHandler.handleMessage(stateHolder, MessagingMessageAdapter(message, profile), state)
             null
         }
     }
