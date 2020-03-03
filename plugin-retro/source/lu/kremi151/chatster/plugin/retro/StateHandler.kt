@@ -31,6 +31,7 @@ import java.io.IOException
 import java.lang.StringBuilder
 import java.lang.invoke.MethodHandles
 import java.nio.file.Files
+import java.util.regex.Pattern
 import kotlin.random.Random
 
 object StateHandler {
@@ -39,6 +40,8 @@ object StateHandler {
 
     private val random = Random(System.currentTimeMillis())
     private val client = OkHttpClient.Builder().build()
+
+    private val REGEX_PATTERN = Pattern.compile("<img\\s+src=[\"']([^\"']+)")
 
     fun handleMessage(stateHolder: RetroStateHolder, message: Message, profile: ProfileLauncher, state: BuildingState?) {
         //val state = stateHolder.getState(message.senderId) ?: stateHolder.createState(message.senderId)
@@ -107,15 +110,24 @@ object StateHandler {
                 .url("https://photofunia.com/categories/all_effects/retro-wave?server=${random.nextInt(10)}")
                 .post(requestBody)
                 .build()
-        val url: String? = client.newCall(request).execute().use {
+        val html: String? = client.newCall(request).execute().use {
             val body = it.body
-            if (body == null) {
-                null
-            } else {
-                body.string().split("?")[0]
-            }
+            body?.string()
         }
-        if (url == null) {
+
+        if (html.isNullOrBlank()) {
+            profile.sendTextMessage(message, "Text could not be generated")
+            return
+        }
+
+        val matcher = REGEX_PATTERN.matcher(html)
+        val url = if (matcher.find()) {
+            matcher.group(1).trim { it <= ' ' }
+        } else {
+            null
+        }
+
+        if (url.isNullOrBlank()) {
             profile.sendTextMessage(message, "Text could not be generated")
             return
         }
