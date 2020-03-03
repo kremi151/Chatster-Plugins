@@ -46,7 +46,7 @@ object StateHandler {
     fun handleMessage(stateHolder: RetroStateHolder, message: Message, profile: ProfileLauncher, state: BuildingState?) {
         //val state = stateHolder.getState(message.senderId) ?: stateHolder.createState(message.senderId)
         if (state == null) {
-            stateHolder.createState(message.senderId)
+            stateHolder.createState(message.sender)
             profile.sendTextMessage(message, "What should be put on the first line?")
             return
         }
@@ -54,7 +54,7 @@ object StateHandler {
             profile.sendTextMessage(message, "I'm sorry, could you repeat that?\n(Type \"cancel\" to cancel)")
             return
         } else if (message.message == "cancel") {
-            stateHolder.wipeState(message.senderId)
+            stateHolder.wipeState(message.sender)
             profile.sendTextMessage(message, "very canceled. much sad.")
             return
         }
@@ -93,7 +93,7 @@ object StateHandler {
                 return
             }
             state.textStyle = textStyle
-            stateHolder.wipeState(message.senderId)
+            stateHolder.wipeState(message.sender)
             sendRequest(message, state, profile)
         }
     }

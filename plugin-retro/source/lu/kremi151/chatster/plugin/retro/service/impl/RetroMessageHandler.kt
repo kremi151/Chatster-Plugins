@@ -28,7 +28,7 @@ class RetroMessageHandler: MessageHandler {
     @Inject private lateinit var stateHolder: RetroStateHolder
 
     override fun onInboundMessage(message: Message, profile: ProfileLauncher): Message? {
-        val state = stateHolder.getState(message.senderId)
+        val state = stateHolder.getState(message.sender)
         return if (state == null && "!retro" != message.message) {
             message
         } else {

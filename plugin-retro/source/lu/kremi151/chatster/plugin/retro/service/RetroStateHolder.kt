@@ -16,12 +16,13 @@
 
 package lu.kremi151.chatster.plugin.retro.service
 
+import lu.kremi151.chatster.api.message.SenderReference
 import lu.kremi151.chatster.plugin.retro.state.BuildingState
 
 interface RetroStateHolder {
 
-    fun getState(senderId: String): BuildingState?
-    fun createState(senderId: String): BuildingState
-    fun wipeState(senderId: String)
+    fun getState(sender: SenderReference): BuildingState?
+    fun createState(sender: SenderReference): BuildingState
+    fun wipeState(sender: SenderReference)
 
 }

@@ -16,28 +16,29 @@
 
 package lu.kremi151.chatster.plugin.retro.service.impl
 
+import lu.kremi151.chatster.api.message.SenderReference
 import lu.kremi151.chatster.plugin.retro.service.RetroStateHolder
 import lu.kremi151.chatster.plugin.retro.state.BuildingState
 
 class RetroStateHolderImpl: RetroStateHolder {
 
-    private val states: MutableMap<String, BuildingState> = HashMap()
+    private val states: MutableMap<SenderReference, BuildingState> = HashMap()
 
     @Synchronized
-    override fun getState(senderId: String): BuildingState? {
-        return states[senderId]
+    override fun getState(sender: SenderReference): BuildingState? {
+        return states[sender]
     }
 
     @Synchronized
-    override fun createState(senderId: String): BuildingState {
+    override fun createState(sender: SenderReference): BuildingState {
         val state = BuildingState()
-        states[senderId] = state
+        states[sender] = state
         return state
     }
 
     @Synchronized
-    override fun wipeState(senderId: String) {
-        states.remove(senderId)
+    override fun wipeState(sender: SenderReference) {
+        states.remove(sender)
     }
 
 }
