@@ -29,7 +29,7 @@ class RetroMessageHandler: MessageHandler {
 
     override fun onInboundMessage(message: Message, profile: ProfileLauncher): Message? {
         val state = stateHolder.getState(message.senderId)
-        return if (state == null) {
+        return if (state == null && "!retro" != message.message) {
             message
         } else {
             StateHandler.handleMessage(stateHolder, message, profile, state)
